@@ -1,0 +1,14 @@
+services:
+  lambda:
+    build: .
+    container_name: lambda-container
+    volumes:
+      - ./:/var/task
+      - ~/.aws:/root/.aws:ro
+    command: ["lambda.handler"]
+    ports:
+      - "9000:8080"
+    environment:
+      - AWS_PROFILE=mfa-session
+      - AWS_REGION=us-east-1
+    restart: unless-stopped

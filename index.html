@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Customer Facing Interface</title>
+</head>
+<body>
+  <h1>G360's CSV Intaker</h1>
+
+  <form id="upload-form">
+    <input type="file" id="file-input" required />
+    <!-- <input type="file" id="file-input" accept=".csv" required /> -->
+    <button type="submit">Upload</button>
+  </form>
+
+  <pre id="result"></pre>
+
+  <script>
+    const apiUrl = "http://localhost:9100/upload";  // Flask edge
+
+    document.getElementById("upload-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById("file-input");
+      if (!fileInput.files.length) return;
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      const resultEl = document.getElementById("result");
+      resultEl.textContent = "Validating...";
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: "POST",
+          body: formData,           // multipart/form-data; no manual headers
+        });
+
+        const data = await res.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = "Error: " + err;
+      }
+    });
+  </script>
+</body>
+</html>
